@@ -14,6 +14,38 @@ public class ExpenseTracker {
     private static final String[] WEEKDAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     private static final DecimalFormat peso = new DecimalFormat("₱#,##0.00");
 
+    public void configureNewTracker(Scanner scanner) {
+        System.out.print("Enter your weekly budget (e.g. 10000): ");
+        while (!scanner.hasNextDouble()) {
+            System.out.println("Invalid input. Please enter a numeric value for the budget.");
+            System.out.print("Enter your weekly budget (e.g. 10000): ");
+            scanner.next(); // consume invalid input
+        }
+        double budget = scanner.nextDouble();
+        setBudget(budget);
+        scanner.nextLine(); // Consume newline
+
+        System.out.print("Enter the start day of the week (0 for Sunday, 1 for Monday, ... 6 for Saturday): ");
+        int startDayInput;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                startDayInput = scanner.nextInt();
+                if (startDayInput >= 0 && startDayInput <= 6) {
+                    break; // Valid input
+                } else {
+                    System.out.println("Invalid day. Please enter a number between 0 and 6.");
+                    System.out.print("Enter the start day of the week (0-6): ");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number for the start day.");
+                System.out.print("Enter the start day of the week (0-6): ");
+                scanner.next(); // consume invalid input
+            }
+        }
+        setWeekStartDay(startDayInput);
+        scanner.nextLine(); // Consume newline
+    }
+
     public void loadData(String filename) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String line;
