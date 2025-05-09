@@ -14,45 +14,76 @@ public class Main {
         System.out.println("2. Load Existing Tracker");
         System.out.print("Choose an option (1 or 2): ");
 
-        int choice = 0;
-        // Basic input validation for choice
+        int initialChoice;
+
         if (scanner.hasNextInt()) {
-            choice = scanner.nextInt();
+            initialChoice = scanner.nextInt();
         } else {
-            System.out.println("Invalid input. Please run the program again and enter a number (1 or 2).");
+            System.out.println("Invalid initial input. Please run the program again and enter a number (1 or 2).");
             scanner.close();
             return;
         }
         scanner.nextLine(); // Consume the leftover newline
 
         File userFile = new File("filename.txt");
+        boolean trackerReady = false;
 
-        if (choice == 1) { // Path 1: Start New Tracker
+        if (initialChoice == 1) { // Path 1: Start New Tracker
             System.out.println("\n--- Starting New Tracker ---");
-            tracker.configureNewTracker(scanner);
-
-        } else if (choice == 2) { // Path 2: Start Existing Tracker
+            tracker.configureTrackerSession(scanner); // Configure budget and start day
+            System.out.println("\nNew tracker configured for this session.");
+            trackerReady = true;
+        } else if (initialChoice == 2) { // Path 2: Start Existing Tracker
             System.out.println("\n--- Loading Existing Tracker ---");
             if (!userFile.exists() || !userFile.isFile()) {
                 System.out.println("Warning: Existing tracker data file ('" + userFile.getName() + "') not found or is not a file.");
-                System.out.println("You can set up a new configuration, but no past expenses will be loaded.");
-                // Proceed to set budget and start day as if it's a new setup without loading data
-                tracker.configureNewTracker(scanner);
-            }
-
-            // For existing tracker (whether file was found or not), ask which week to display
-            System.out.print("\nEnter the week number to display summary (1 to 12): ");
-            int weekNum = 1; // Default
-            if (scanner.hasNextInt()) {
-                weekNum = scanner.nextInt();
+                System.out.println("You can set up a configuration for this session, but no past expenses will be loaded.");
+                tracker.configureTrackerSession(scanner); // Configure budget and start day
+                System.out.println("\nTracker configured for this session. No previous expense data was loaded as file was missing.");
             } else {
-                System.out.println("Invalid input for week number, defaulting to week 1.");
+                tracker.loadData(String.valueOf(userFile)); // Load username and rawData
+                // loadData now prints its own success/user message
+                tracker.configureTrackerSession(scanner); // Configure/confirm budget and start day for session
+                System.out.println("\nExisting tracker loaded and configured for this session.");
             }
-            scanner.nextLine(); // Consume newline
-            tracker.displayWeeklySummary(weekNum);
-
+            trackerReady = true;
         } else {
-            System.out.println("Invalid choice. Exiting program.");
+            System.out.println("Invalid initial choice. Exiting program.");
+        }
+
+        if (trackerReady) {
+            int actionChoice;
+            do {
+                System.out.println("\nWhat would you like to do?");
+                System.out.println("1. View Weekly Summary");
+                System.out.println("2. Add New Expense");
+                System.out.println("3. Exit");
+                System.out.print("Choose an action (1-3): ");
+
+                if (scanner.hasNextInt()) {
+                    actionChoice = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+
+                    switch (actionChoice) {
+                        case 1:
+                            tracker.promptAndDisplayWeeklySummary(scanner);
+                            break;
+                        case 2:
+                            tracker.addNewExpense(scanner);
+                            break;
+                        case 3:
+                            System.out.println("Exiting tracker application.");
+                            break;
+                        default:
+                            System.out.println("Invalid action choice. Please try again.");
+                            break;
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a number (1-3).");
+                    scanner.nextLine(); // Consume invalid input
+                    actionChoice = 0; // Set to a value that doesn't exit the loop
+                }
+            } while (actionChoice != 3);
         }
 
         System.out.println("\nThank you for using the Expense Tracker!");
