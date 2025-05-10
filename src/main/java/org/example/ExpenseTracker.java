@@ -10,6 +10,10 @@ public class ExpenseTracker {
     private double weeklyBudget;
     private int startDay; // 0 = Sunday, 1 = Monday, etc.
     private String[] rawData = new String[82]; // Day 1 to Day 82
+    
+    /*
+    To 
+     */
 
     private static final String[] WEEKDAYS = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
     private static final DecimalFormat peso = new DecimalFormat("₱#,##0.00");
@@ -86,7 +90,7 @@ public class ExpenseTracker {
      * Prompts the user for a week number and displays the summary for that week.
      * @param scanner The Scanner object to read user input.
      */
-    public void promptAndDisplayWeeklySummary(Scanner scanner) {
+    public void promptDisplayWeeklySummary(Scanner scanner) {
         if (this.weeklyBudget == 0 && (rawData == null || Arrays.stream(rawData).allMatch(Objects::isNull))) {
             System.out.println("\nTracker is not fully configured (budget might be zero and no data loaded).");
             System.out.println("Please ensure budget is set. Summary might be empty or reflect zero budget.");

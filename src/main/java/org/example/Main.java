@@ -6,8 +6,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ExpenseTracker tracker = new ExpenseTracker(); // Create tracker instance once
+        ExpenseTracker expenseTracker = new ExpenseTracker(); // Create tracker instance once
+        DateTracker dateTracker = new DateTracker();
 
+        System.out.println(nowDateTracker()); //fix this wtf how do you show the current date, also we need to use the date somewhere by the way
         System.out.println("Welcome to Your Expense Tracker!");
         System.out.println("---------------------------------");
         System.out.println("1. Start New Tracker");
@@ -28,27 +30,34 @@ public class Main {
         File userFile = new File("filename.txt");
         boolean trackerReady = false;
 
-        if (initialChoice == 1) { // Path 1: Start New Tracker
+        switch (initialChoice){
+            case 1:     // Path 1: Start New Tracker
             System.out.println("\n--- Starting New Tracker ---");
-            tracker.configureTrackerSession(scanner); // Configure budget and start day
+            expenseTracker.configureTrackerSession(scanner); // Configure budget and start day
             System.out.println("\nNew tracker configured for this session.");
             trackerReady = true;
-        } else if (initialChoice == 2) { // Path 2: Start Existing Tracker
+            break;
+
+            case 2:     // Path 2: Start Existing Tracker
             System.out.println("\n--- Loading Existing Tracker ---");
+
             if (!userFile.exists() || !userFile.isFile()) {
                 System.out.println("Warning: Existing tracker data file ('" + userFile.getName() + "') not found or is not a file.");
                 System.out.println("You can set up a configuration for this session, but no past expenses will be loaded.");
-                tracker.configureTrackerSession(scanner); // Configure budget and start day
+
+                expenseTracker.configureTrackerSession(scanner); // Configure budget and start day
+
                 System.out.println("\nTracker configured for this session. No previous expense data was loaded as file was missing.");
+
             } else {
-                tracker.loadData(String.valueOf(userFile)); // Load username and rawData
+                expenseTracker.loadData(String.valueOf(userFile)); // Load username and rawData
                 // loadData now prints its own success/user message
-                tracker.configureTrackerSession(scanner); // Configure/confirm budget and start day for session
+                expenseTracker.configureTrackerSession(scanner); // Configure/confirm budget and start day for session
                 System.out.println("\nExisting tracker loaded and configured for this session.");
             }
             trackerReady = true;
-        } else {
-            System.out.println("Invalid initial choice. Exiting program.");
+
+            default: System.out.println("Invalid initial choice. Exiting program.");
         }
 
         if (trackerReady) {
@@ -66,10 +75,10 @@ public class Main {
 
                     switch (actionChoice) {
                         case 1:
-                            tracker.promptAndDisplayWeeklySummary(scanner);
+                            expenseTracker.promptDisplayWeeklySummary(scanner);
                             break;
                         case 2:
-                            tracker.addNewExpense(scanner);
+                            expenseTracker.addNewExpense(scanner);
                             break;
                         case 3:
                             System.out.println("Exiting tracker application.");
